@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Holiday Gifts Collection</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+        }
+        .form-container { 
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        .header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #1a1a1a;
+        }
+        .section { 
+            background: white; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .section-title { 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin: 0 0 1.5rem 0; 
+            color: #1a1a1a; 
+        }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { 
+            display: block; 
+            font-size: 13px; 
+            color: #666; 
+            margin-bottom: 6px; 
+            font-weight: 500; 
+        }
+        .form-input, .form-select, textarea { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            color: #1a1a1a; 
+            background: white;
+            font-family: inherit;
+        }
+        .form-input:focus, .form-select:focus, textarea:focus { 
+            outline: none; 
+            border-color: #0d5fa5;
+            box-shadow: 0 0 0 3px rgba(13, 95, 165, 0.1);
+        }
+        .form-error { 
+            font-size: 12px; 
+            color: #d32f2f; 
+            margin-top: 4px; 
+        }
+        .form-success { 
+            font-size: 12px; 
+            color: #388e3c; 
+            margin-top: 4px; 
+        }
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+        .grid-3 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 12px; 
+        }
+        .merchant-slot { 
+            background: #fafafa; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            padding: 1rem; 
+            margin-bottom: 12px; 
+            position: relative; 
+        }
+        .merchant-slot.selected { 
+            border-color: #0d5fa5; 
+            background: #e6f1fb;
+        }
+        .merchant-number { 
+            position: absolute; 
+            top: 12px; 
+            right: 12px; 
+            background: #0d5fa5; 
+            color: white; 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 12px; 
+            font-weight: 600; 
+        }
+        .merchant-search { position: relative; }
+        .search-results { 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            right: 0; 
+            background: white; 
+            border: 1px solid #ddd; 
+            border-top: none; 
+            border-radius: 0 0 8px 8px; 
+            max-height: 180px; 
+            overflow-y: auto; 
+            z-index: 10; 
+            display: none; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .search-results.open { display: block; }
+        .search-result { 
+            padding: 8px 12px; 
+            cursor: pointer; 
+            font-size: 13px; 
+            border-bottom: 1px solid #eee; 
+        }
+        .search-result:hover { background: #f5f5f5; }
+        .search-result-name { font-weight: 600; }
+        .search-result-detail { 
+            font-size: 11px; 
+            color: #888; 
+        }
+        .btn { 
+            padding: 10px 16px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 500; 
+            background: white; 
+            color: #1a1a1a; 
+            transition: all 0.2s;
+        }
+        .btn:hover { 
+            background: #f5f5f5; 
+            border-color: #999;
+        }
+        .btn-primary { 
+            background: #0d5fa5; 
+            color: white; 
+            border-color: #0d5fa5; 
+        }
+        .btn-primary:hover { 
+            background: #0a4a80;
+        }
+        .btn-small { 
+            padding: 6px 10px; 
+            font-size: 12px; 
+        }
+        .btn-danger { color: #d32f2f; }
+        .tab-buttons { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .tab-btn { 
+            padding: 12px 16px; 
+            border: none; 
+            background: transparent; 
+            cursor: pointer; 
+            border-radius: 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab-btn.active { 
+            color: #0d5fa5;
+            border-bottom-color: #0d5fa5;
+        }
+        .view-hidden { display: none; }
+        .view-hidden.active { display: block; }
+        .merchant-item { 
+            background: #fafafa; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            padding: 1rem; 
+            margin-bottom: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: start; 
+        }
+        .merchant-item-info { flex: 1; }
+        .merchant-item-name { 
+            font-weight: 600; 
+            font-size: 14px; 
+            color: #1a1a1a; 
+        }
+        .merchant-item-detail { 
+            font-size: 12px; 
+            color: #666; 
+            margin-top: 4px; 
+        }
+        .merchant-item-actions { 
+            display: flex; 
+            gap: 4px; 
+        }
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 12px; 
+            margin-bottom: 1.5rem; 
+        }
+        .stat { 
+            background: #fafafa; 
+            border-radius: 8px; 
+            padding: 12px; 
+            text-align: center; 
+        }
+        .stat-label { 
+            font-size: 11px; 
+            color: #888; 
+        }
+        .stat-value { 
+            font-size: 20px; 
+            font-weight: 600; 
+            color: #1a1a1a; 
+        }
+        .duplicate-warning { 
+            background: #fff3cd; 
+            color: #856404; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            font-size: 12px; 
+            margin-bottom: 8px; 
+            display: none; 
+        }
+        .duplicate-warning.show { display: block; }
+        .success-msg { 
+            background: #d4edda; 
+            color: #155724; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 12px; 
+            font-size: 13px; 
+            display: none; 
+        }
+        .success-msg.show { display: block; }
+        .address-verified { 
+            background: #d4edda; 
+            color: #155724; 
+            padding: 6px 8px; 
+            border-radius: 8px; 
+            font-size: 11px; 
+            margin-top: 4px; 
+            display: none; 
+        }
+        .address-verified.show { display: block; }
+        .merchant-form-section { 
+            background: #fafafa; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 8px; 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="header">
+            <h1>🎁 Merchant Holiday Gifts Collection</h1>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('form')">Collection Form</button>
+            <button class="tab-btn" onclick="switchTab('submissions')">Submissions</button>
+        </div>
+
+        <!-- FORM TAB (Combined Rep + Merchant) -->
+        <div id="form-view" class="view-hidden active">
+            <div class="success-msg" id="submitSuccess">
+                ✓ Submission saved! Form cleared for next rep.
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Rep information</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">First name *</label>
+                        <input type="text" id="repFirst" class="form-input" placeholder="Jane">
+                        <div id="err-repFirst" class="form-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last name *</label>
+                        <input type="text" id="repLast" class="form-input" placeholder="Smith">
+                        <div id="err-repLast" class="form-error"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" id="repEmail" class="form-input" placeholder="jane@company.com">
+                    <div id="err-repEmail" class="form-error"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Street address *</label>
+                    <input type="text" id="repAddr1" class="form-input" placeholder="123 Main Street">
+                    <div id="err-repAddr1" class="form-error"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apt, suite, etc. (optional)</label>
+                    <input type="text" id="repAddr2" class="form-input" placeholder="Suite 100">
+                </div>
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label class="form-label">City *</label>
+                        <input type="text" id="repCity" class="form-input" placeholder="San Francisco">
+                        <div id="err-repCity" class="form-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">State *</label>
+                        <input type="text" id="repState" class="form-input" placeholder="CA" maxlength="2">
+                        <div id="err-repState" class="form-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ZIP *</label>
+                        <input type="text" id="repZip" class="form-input" placeholder="94105">
+                        <div id="err-repZip" class="form-error"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Add new merchant</h2>
+                
+                <div class="merchant-form-section">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Merchant name *</label>
+                            <input type="text" id="newMerchantName" class="form-input" placeholder="Acme Corp">
+                            <div id="err-merchant-name" class="form-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">MID# *</label>
+                            <input type="text" id="newMerchantMID" class="form-input" placeholder="123456789">
+                            <div id="err-merchant-mid" class="form-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Street address *</label>
+                        <input type="text" id="newMerchantAddr1" class="form-input" placeholder="123 Main Street">
+                        <div id="err-merchant-addr1" class="form-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Apt, suite, etc. (optional)</label>
+                        <input type="text" id="newMerchantAddr2" class="form-input" placeholder="Suite 100">
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label class="form-label">City *</label>
+                            <input type="text" id="newMerchantCity" class="form-input" placeholder="New York">
+                            <div id="err-merchant-city" class="form-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">State *</label>
+                            <input type="text" id="newMerchantState" class="form-input" placeholder="NY" maxlength="2">
+                            <div id="err-merchant-state" class="form-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ZIP *</label>
+                            <input type="text" id="newMerchantZip" class="form-input" placeholder="10001">
+                            <div id="err-merchant-zip" class="form-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone number *</label>
+                        <input type="tel" id="newMerchantPhone" class="form-input" placeholder="(212) 555-0123">
+                        <div id="err-merchant-phone" class="form-error"></div>
+                    </div>
+
+                    <div id="address-verified-msg" class="address-verified">✓ Address verified</div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn" onclick="verifyAddress()">Verify address</button>
+                        <button class="btn btn-primary" onclick="addMerchant()">Add merchant</button>
+                        <button class="btn" onclick="clearMerchantForm()">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Merchant list</h2>
+                <div id="merchant-count" style="margin-bottom: 1.5rem; font-size: 14px; font-weight: 600;"></div>
+                <div id="merchants-list" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Select 15 merchants</h2>
+                <p style="color: #666; font-size: 13px; margin: 0 0 1.5rem 0;">Search to find merchants. Duplicates will be flagged.</p>
+                <div id="merchants-container"></div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 2rem;">
+                <button class="btn btn-primary" onclick="submitForm()" style="flex: 1;">Submit</button>
+                <button class="btn" onclick="clearForm()">Clear</button>
+            </div>
+        </div>
+
+        <!-- SUBMISSIONS TAB -->
+        <div id="submissions-view" class="view-hidden">
+            <div class="section">
+                <h2 class="section-title">Submissions dashboard</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">Total submissions</div>
+                        <div class="stat-value" id="total-submissions">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Reps completed</div>
+                        <div class="stat-value" id="unique-reps">0</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="exportCSV()">Export all as CSV</button>
+                <button class="btn btn-danger" onclick="clearAllData()" style="margin-left:8px;">Clear all</button>
+            </div>
+
+            <div id="submissions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let merchants = [];
+
+        function switchTab(tab) {
+            document.querySelectorAll('.view-hidden').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab + '-view').classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            if (tab === 'form') renderMerchantSlots();
+            if (tab === 'submissions') renderSubmissions();
+        }
+
+        function clearMerchantErrors() {
+            ['name', 'mid', 'addr1', 'city', 'state', 'zip', 'phone'].forEach(f => {
+                document.getElementById('err-merchant-' + f).textContent = '';
+            });
+        }
+
+        function verifyAddress() {
+            clearMerchantErrors();
+            const addr1 = document.getElementById('newMerchantAddr1').value.trim();
+            const city = document.getElementById('newMerchantCity').value.trim();
+            const state = document.getElementById('newMerchantState').value.trim();
+            const zip = document.getElementById('newMerchantZip').value.trim();
+
+            const errors = [];
+            if (!addr1) errors.push('addr1');
+            if (!city) errors.push('city');
+            if (!state || state.length !== 2) errors.push('state');
+            if (!zip || !/^\d{5}$/.test(zip)) errors.push('zip');
+
+            if (errors.length > 0) {
+                errors.forEach(e => {
+                    const msg = e === 'state' ? 'State (2 letters required)' : e === 'zip' ? 'ZIP (5 digits required)' : 'Required field';
+                    document.getElementById('err-merchant-' + e).textContent = msg;
+                });
+                return;
+            }
+
+            setTimeout(() => {
+                document.getElementById('address-verified-msg').classList.add('show');
+            }, 400);
+        }
+
+        function addMerchant() {
+            clearMerchantErrors();
+            const name = document.getElementById('newMerchantName').value.trim();
+            const mid = document.getElementById('newMerchantMID').value.trim();
+            const addr1 = document.getElementById('newMerchantAddr1').value.trim();
+            const addr2 = document.getElementById('newMerchantAddr2').value.trim();
+            const city = document.getElementById('newMerchantCity').value.trim();
+            const state = document.getElementById('newMerchantState').value.trim();
+            const zip = document.getElementById('newMerchantZip').value.trim();
+            const phone = document.getElementById('newMerchantPhone').value.trim();
+
+            let valid = true;
+            if (!name) { document.getElementById('err-merchant-name').textContent = 'Merchant name required'; valid = false; }
+            if (!mid) { document.getElementById('err-merchant-mid').textContent = 'MID# required'; valid = false; }
+            if (!addr1) { document.getElementById('err-merchant-addr1').textContent = 'Address required'; valid = false; }
+            if (!city) { document.getElementById('err-merchant-city').textContent = 'City required'; valid = false; }
+            if (!state || state.length !== 2) { document.getElementById('err-merchant-state').textContent = 'State (2 letters)'; valid = false; }
+            if (!zip || !/^\d{5}$/.test(zip)) { document.getElementById('err-merchant-zip').textContent = 'ZIP (5 digits)'; valid = false; }
+            if (!phone) { document.getElementById('err-merchant-phone').textContent = 'Phone required'; valid = false; }
+
+            if (!valid) return;
+
+            if (merchants.find(m => m.mid === mid)) {
+                alert('This MID# already exists');
+                return;
+            }
+
+            merchants.push({name, mid, addr1, addr2, city, state, zip, phone});
+            clearMerchantForm();
+            renderMerchantList();
+            document.getElementById('address-verified-msg').classList.remove('show');
+        }
+
+        function clearMerchantForm() {
+            document.getElementById('newMerchantName').value = '';
+            document.getElementById('newMerchantMID').value = '';
+            document.getElementById('newMerchantAddr1').value = '';
+            document.getElementById('newMerchantAddr2').value = '';
+            document.getElementById('newMerchantCity').value = '';
+            document.getElementById('newMerchantState').value = '';
+            document.getElementById('newMerchantZip').value = '';
+            document.getElementById('newMerchantPhone').value = '';
+            clearMerchantErrors();
+            document.getElementById('address-verified-msg').classList.remove('show');
+        }
+
+        function renderMerchantList() {
+            const list = document.getElementById('merchants-list');
+            document.getElementById('merchant-count').textContent = merchants.length + ' merchants';
+            
+            if (merchants.length === 0) {
+                list.innerHTML = '<p style="color: #888; font-size: 13px;">No merchants added yet.</p>';
+                return;
+            }
+
+            list.innerHTML = merchants.map((m, idx) => `
+                <div class="merchant-item">
+                    <div class="merchant-item-info">
+                        <div class="merchant-item-name">${m.name}</div>
+                        <div class="merchant-item-detail">MID: ${m.mid}</div>
+                        <div class="merchant-item-detail">${m.addr1}${m.addr2 ? ' ' + m.addr2 : ''}, ${m.city} ${m.state} ${m.zip}</div>
+                        <div class="merchant-item-detail">${m.phone}</div>
+                    </div>
+                    <div class="merchant-item-actions">
+                        <button class="btn btn-small" onclick="editMerchant(${idx})" title="Edit">Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteMerchant(${idx})" title="Delete">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteMerchant(idx) {
+            if (!confirm('Delete this merchant?')) return;
+            merchants.splice(idx, 1);
+            renderMerchantList();
+        }
+
+        function editMerchant(idx) {
+            const m = merchants[idx];
+            document.getElementById('newMerchantName').value = m.name;
+            document.getElementById('newMerchantMID').value = m.mid;
+            document.getElementById('newMerchantAddr1').value = m.addr1;
+            document.getElementById('newMerchantAddr2').value = m.addr2;
+            document.getElementById('newMerchantCity').value = m.city;
+            document.getElementById('newMerchantState').value = m.state;
+            document.getElementById('newMerchantZip').value = m.zip;
+            document.getElementById('newMerchantPhone').value = m.phone;
+            merchants.splice(idx, 1);
+            renderMerchantList();
+        }
+
+        function renderMerchantSlots() {
+            if (merchants.length === 0) {
+                document.getElementById('merchants-container').innerHTML = '<div class="section"><p style="color: #d32f2f;">No merchants created yet. Go to the Merchants tab to add merchants first.</p></div>';
+                return;
+            }
+
+            const container = document.getElementById('merchants-container');
+            container.innerHTML = '';
+            for (let i = 1; i <= 15; i++) {
+                const slot = document.createElement('div');
+                slot.id = 'merchant-slot-' + i;
+                slot.className = 'merchant-slot';
+                slot.innerHTML = `
+                    <div class="merchant-number">${i}</div>
+                    <div class="form-group">
+                        <label class="form-label">Merchant ${i}</label>
+                        <div class="merchant-search">
+                            <input type="text" class="form-input merchant-search-input" data-slot="${i}" placeholder="Search merchant..." onkeyup="searchMerchants(this)" autocomplete="off">
+                            <div class="search-results" id="results-${i}"></div>
+                        </div>
+                        <div class="duplicate-warning" id="dup-warning-${i}"></div>
+                    </div>
+                    <div id="merchant-info-${i}" style="display:none; font-size:12px; color: #666; margin-top:8px;"></div>
+                `;
+                container.appendChild(slot);
+            }
+        }
+
+        function searchMerchants(input) {
+            const slot = input.getAttribute('data-slot');
+            const query = input.value.toLowerCase();
+            const resultsDiv = document.getElementById('results-' + slot);
+            
+            if (query.length === 0) {
+                resultsDiv.classList.remove('open');
+                return;
+            }
+            
+            const filtered = merchants.filter(m => m.name.toLowerCase().includes(query) || m.mid.includes(query));
+            resultsDiv.innerHTML = filtered.map(m => `
+                <div class="search-result" onclick="selectMerchant(${slot}, '${m.mid.replace(/'/g, "\\'")}')">
+                    <div class="search-result-name">${m.name}</div>
+                    <div class="search-result-detail">MID: ${m.mid} • ${m.city}, ${m.state}</div>
+                </div>
+            `).join('');
+            resultsDiv.classList.toggle('open', filtered.length > 0);
+        }
+
+        function selectMerchant(slot, mid) {
+            const merchant = merchants.find(m => m.mid === mid);
+            if (!merchant) return;
+            
+            document.querySelector(`[data-slot="${slot}"]`).value = merchant.name + ' (MID: ' + mid + ')';
+            document.getElementById('results-' + slot).classList.remove('open');
+            document.getElementById('merchant-slot-' + slot).classList.add('selected');
+            document.getElementById('merchant-slot-' + slot).setAttribute('data-mid', mid);
+            
+            const info = `${merchant.addr1}${merchant.addr2 ? ' ' + merchant.addr2 : ''}, ${merchant.city} ${merchant.state} ${merchant.zip} • ${merchant.phone}`;
+            document.getElementById('merchant-info-' + slot).innerHTML = info;
+            document.getElementById('merchant-info-' + slot).style.display = 'block';
+            
+            checkDuplicates();
+        }
+
+        function checkDuplicates() {
+            const selected = [];
+            for (let i = 1; i <= 15; i++) {
+                const slot = document.getElementById('merchant-slot-' + i);
+                const mid = slot.getAttribute('data-mid');
+                if (mid) {
+                    const dupWarning = document.getElementById('dup-warning-' + i);
+                    if (selected.includes(mid)) {
+                        dupWarning.textContent = '⚠ Duplicate merchant';
+                        dupWarning.classList.add('show');
+                    } else {
+                        dupWarning.classList.remove('show');
+                        selected.push(mid);
+                    }
+                }
+            }
+        }
+
+        function validateForm() {
+            let valid = true;
+            const fields = [{id: 'repFirst', msg: 'First name required'}, {id: 'repLast', msg: 'Last name required'}, {id: 'repEmail', msg: 'Email required'}, {id: 'repAddr1', msg: 'Address required'}, {id: 'repCity', msg: 'City required'}, {id: 'repState', msg: 'State required'}, {id: 'repZip', msg: 'ZIP required (5 digits)'}];
+            
+            fields.forEach(f => {
+                document.getElementById('err-' + f.id).textContent = '';
+                const val = document.getElementById(f.id).value.trim();
+                if (!val || (f.id === 'repZip' && !/^\d{5}$/.test(val))) {
+                    document.getElementById('err-' + f.id).textContent = f.msg;
+                    valid = false;
+                }
+            });
+            
+            let merchantCount = 0;
+            for (let i = 1; i <= 15; i++) {
+                const slot = document.getElementById('merchant-slot-' + i);
+                if (slot.getAttribute('data-mid')) merchantCount++;
+            }
+            if (merchantCount !== 15) {
+                alert('Please select exactly 15 merchants');
+                return false;
+            }
+            
+            const hasDup = document.querySelector('.duplicate-warning.show');
+            if (hasDup) {
+                alert('Please fix duplicate merchant selections');
+                return false;
+            }
+            
+            return valid;
+        }
+
+        function submitForm() {
+            if (!validateForm()) return;
+            
+            const submission = {
+                timestamp: new Date().toLocaleString(),
+                repFirst: document.getElementById('repFirst').value,
+                repLast: document.getElementById('repLast').value,
+                repEmail: document.getElementById('repEmail').value,
+                repAddr1: document.getElementById('repAddr1').value,
+                repAddr2: document.getElementById('repAddr2').value,
+                repCity: document.getElementById('repCity').value,
+                repState: document.getElementById('repState').value,
+                repZip: document.getElementById('repZip').value,
+                merchants: []
+            };
+            
+            for (let i = 1; i <= 15; i++) {
+                const slot = document.getElementById('merchant-slot-' + i);
+                const mid = slot.getAttribute('data-mid');
+                if (mid) {
+                    const m = merchants.find(x => x.mid === mid);
+                    submission.merchants.push({slot: i, ...m});
+                }
+            }
+            
+            let submissions = JSON.parse(localStorage.getItem('merchant-submissions') || '[]');
+            submissions.push(submission);
+            localStorage.setItem('merchant-submissions', JSON.stringify(submissions));
+            
+            document.getElementById('submitSuccess').classList.add('show');
+            setTimeout(() => document.getElementById('submitSuccess').classList.remove('show'), 3000);
+            
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('repFirst').value = '';
+            document.getElementById('repLast').value = '';
+            document.getElementById('repEmail').value = '';
+            document.getElementById('repAddr1').value = '';
+            document.getElementById('repAddr2').value = '';
+            document.getElementById('repCity').value = '';
+            document.getElementById('repState').value = '';
+            document.getElementById('repZip').value = '';
+            document.querySelectorAll('.merchant-slot').forEach(el => {
+                el.classList.remove('selected');
+                el.removeAttribute('data-mid');
+            });
+            document.querySelectorAll('.merchant-search-input').forEach(el => el.value = '');
+            document.querySelectorAll('[id^="merchant-info-"]').forEach(el => el.style.display = 'none');
+        }
+
+        function renderSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('merchant-submissions') || '[]');
+            document.getElementById('total-submissions').textContent = submissions.length;
+            document.getElementById('unique-reps').textContent = new Set(submissions.map(s => s.repFirst + ' ' + s.repLast)).size;
+            
+            const list = document.getElementById('submissions-list');
+            if (submissions.length === 0) {
+                list.innerHTML = '<div class="section"><p style="color: #888;">No submissions yet.</p></div>';
+                return;
+            }
+            
+            list.innerHTML = submissions.map((s, idx) => `
+                <div class="section">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <strong>${s.repFirst} ${s.repLast}</strong><br>
+                            <span style="font-size: 12px; color: #666;">${s.repEmail}</span><br>
+                            <span style="font-size: 11px; color: #999;">${s.timestamp}</span>
+                        </div>
+                        <button class="btn btn-small btn-danger" onclick="deleteSubmission(${idx})">Delete</button>
+                    </div>
+                    <div style="margin-top: 12px; font-size: 12px;">15 merchants selected</div>
+                </div>
+            `).join('');
+        }
+
+        function deleteSubmission(idx) {
+            if (!confirm('Delete this submission?')) return;
+            let submissions = JSON.parse(localStorage.getItem('merchant-submissions') || '[]');
+            submissions.splice(idx, 1);
+            localStorage.setItem('merchant-submissions', JSON.stringify(submissions));
+            renderSubmissions();
+        }
+
+        function exportCSV() {
+            const submissions = JSON.parse(localStorage.getItem('merchant-submissions') || '[]');
+            if (submissions.length === 0) { alert('No submissions to export'); return; }
+            
+            let csv = 'Submission #,Rep Name,Email,Address,City,State,ZIP,Merchant #,Merchant Name,MID#,Merchant Address,Merchant City,Merchant State,Merchant ZIP,Merchant Phone,Timestamp\n';
+            
+            submissions.forEach((sub, idx) => {
+                sub.merchants.forEach(m => {
+                    csv += `${idx+1},"${sub.repFirst} ${sub.repLast}","${sub.repEmail}","${sub.repAddr1}${sub.repAddr2 ? ' ' + sub.repAddr2 : ''}","${sub.repCity}","${sub.repState}","${sub.repZip}",${m.slot},"${m.name}","${m.mid}","${m.addr1}${m.addr2 ? ' ' + m.addr2 : ''}","${m.city}","${m.state}","${m.zip}","${m.phone}","${sub.timestamp}"\n`;
+                });
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'merchant_holiday_gifts_' + new Date().toISOString().slice(0,10) + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function clearAllData() {
+            if (!confirm('Delete all submissions? This cannot be undone.')) return;
+            localStorage.removeItem('merchant-submissions');
+            renderSubmissions();
+        }
+    </script>
+</body>
+</html>
